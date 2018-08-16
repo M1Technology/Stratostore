@@ -24,10 +24,12 @@ repositories {
 	mavenCentral()
 }
 
-
 dependencies {
+    compileOnly "org.projectlombok:lombok"
+
 	compile('org.springframework.boot:spring-boot-starter')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile 'org.apache.commons:commons-lang3'
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

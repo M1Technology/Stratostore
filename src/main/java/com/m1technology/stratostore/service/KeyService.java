@@ -1,5 +1,5 @@
 package com.m1technology.stratostore.service;
 
-public interface RandomService {
+public interface KeyService {
     byte[] getKey(Integer length);
 }
