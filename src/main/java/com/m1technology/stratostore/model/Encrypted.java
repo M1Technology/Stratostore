@@ -3,7 +3,7 @@ package com.m1technology.stratostore.model;
 import lombok.Value;
 
 @Value
-public class Encoded {
-    private byte[] data;
+public class Encrypted {
+    private byte[] ciphertext;
     private byte[] key;
 }

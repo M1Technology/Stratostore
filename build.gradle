@@ -29,7 +29,13 @@ dependencies {
 
 	compile('org.springframework.boot:spring-boot-starter')
 	compile('org.springframework.boot:spring-boot-starter-web')
-	compile 'org.apache.commons:commons-lang3'
+	compile('org.apache.commons:commons-lang3')
+    compile('commons-validator:commons-validator:1.4.0')
+    compile('org.apache.commons:commons-collections4:4.0')
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+test {
+    testLogging.showStandardStreams = true
 }

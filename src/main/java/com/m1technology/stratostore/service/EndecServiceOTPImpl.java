@@ -1,30 +1,32 @@
 package com.m1technology.stratostore.service;
 
-import com.m1technology.stratostore.model.Encoded;
+import com.m1technology.stratostore.model.Encrypted;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EndecServiceOTPImpl implements EndecService{
 
     @Autowired
     private KeyService keyService;
 
     @Override
-    public Encoded encode(byte[] data) {
+    public Encrypted encrypt(byte[] data) {
         final byte[] encoded = new byte[data.length];
         final byte[] key = keyService.getKey(data.length);
 
         for (int i = 0; i < data.length; i++) {
             encoded[i] = (byte) (data[i] ^ key[i]);
         }
-        return new Encoded(encoded, key);
+        return new Encrypted(encoded, key);
     }
 
     @Override
-    public byte[] decode(Encoded encoded) {
-        final byte[] decoded = new byte[encoded.getData().length];
+    public byte[] decrypt(Encrypted encrypted) {
+        final byte[] decoded = new byte[encrypted.getCiphertext().length];
 
-        for (int i = 0; i < encoded.getData().length; i++) {
-            decoded[i] = (byte) (encoded.getData()[i] ^ encoded.getKey()[i]);
+        for (int i = 0; i < encrypted.getCiphertext().length; i++) {
+            decoded[i] = (byte) (encrypted.getCiphertext()[i] ^ encrypted.getKey()[i]);
         }
         return decoded;
     }
