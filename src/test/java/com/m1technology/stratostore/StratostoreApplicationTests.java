@@ -35,6 +35,12 @@ public class StratostoreApplicationTests {
 	private EndecService endecService;
 	 	
 	@Test 
+	public void testDieharder() {
+		//https://webhome.phy.duke.edu/~rgb/General/dieharder.php
+	}
+	
+	
+	@Test 
 	public void testKeyServiceReturnsProperLengthKey() {
 		
 		final byte[] key1 = keyService.getKey(100);
@@ -55,10 +61,9 @@ public class StratostoreApplicationTests {
 		final byte[] key6 = keyService.getKey(600000000);
 		assertEquals(key6.length, 600000000);
 		
-		final byte[] keyMax = keyService.getKey(Integer.MAX_VALUE-2);
-		assertEquals(keyMax.length, Integer.MAX_VALUE-2);
 		
 	}
+	
 	
 	
 	@Test 
