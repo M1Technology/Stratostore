@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.m1technology.stratostore.model.Encoded;
+import com.m1technology.stratostore.model.Encrypted;
 import com.m1technology.stratostore.service.EndecService;
 import com.m1technology.stratostore.service.KeyService;
 
@@ -65,22 +65,24 @@ public class StratostoreApplicationTests {
 	}
 	
 	
-	
+	/*
 	@Test 
-	public void testEncodeAndDecodeDataReturnsExpectedData() {
+	public void testEncryptAndDeryptDataReturnsExpectedData() {
 	
 		String input = "This is my input string with a bunch of special characters, like !@#$%^&*()_+|}{|:<>?'";
 		byte[] data = input.getBytes();
 		
-		int desiredFragments = 3;
+		int desiredShares = 3;
 		
-		byte[][] fragments = endecService.encode2(data, desiredFragments);
+		byte[][] shares = endecService.encrypt(data, desiredShares);
 		
-		byte[] returnedData = endecService.decode2(fragments);
+		byte[] returnedData = endecService.decode2(shares);
 		
 		assertEquals(input, new String(returnedData, StandardCharsets.UTF_8));
 		
-	}
+	}*/
+	
+	
 	
 	@Test
 	public void testLargePngImage() {
@@ -102,28 +104,28 @@ public class StratostoreApplicationTests {
 		}
 
 		//Convert the byte[] into framents
-		Encoded encoded = endecService.encode(originalImageBytes);
+		Encrypted encrypted = endecService.encrypt(originalImageBytes);
 		
-		byte[] frag1bytes = new byte[originalImageBytes.length];
-		byte[] frag2bytes = new byte[originalImageBytes.length];
+		byte[] share1bytes = new byte[originalImageBytes.length];
+		byte[] share2bytes = new byte[originalImageBytes.length];
 		
-		byte[] decodedBytes = endecService.decode(encoded);
+		byte[] decryptedBytes = endecService.decrypt(encrypted);
 		
 		System.out.print("length is: " + originalImageBytes.length + " !");
 		
 		for (int i = 0; i < originalImageBytes.length; i++) {
 			if (i < 200) { //some of the bytes are header info that we need to keep
-				frag1bytes[i] = originalImageBytes[i];
-				frag2bytes[i] = originalImageBytes[i];
+				share1bytes[i] = originalImageBytes[i];
+				share2bytes[i] = originalImageBytes[i];
 			} else {
-				frag1bytes[i] = encoded.getData()[i];
-				frag2bytes[i] = encoded.getKey()[i];
+				share1bytes[i] = encrypted.getCiphertext()[i];
+				share2bytes[i] = encrypted.getKey()[i];
 			}
 		}
 		
 		    
 		//write original back to file to test that it's the same as the input
-		InputStream orig = new ByteArrayInputStream(decodedBytes);
+		InputStream orig = new ByteArrayInputStream(decryptedBytes);
 		BufferedImage original2;
 		try {
 			original2 = ImageIO.read(orig);
@@ -153,7 +155,7 @@ public class StratostoreApplicationTests {
 	
 	
 	@Test
-	public void test_visuallyInspectDecodedShares() {
+	public void test_visuallyInspectDecryptedShares() {
 		
 		
 		//Read in an image as a byte array
@@ -181,16 +183,16 @@ public class StratostoreApplicationTests {
 			e.printStackTrace();
 		}
 
-		Encoded encoded = endecService.encode(imageBytes);
+		Encrypted encrypted = endecService.encrypt(imageBytes);
 		
-		byte[] shareA = encoded.getData();
+		byte[] shareA = encrypted.getCiphertext();
 		outputBytesToImage(image.getHeight(), image.getWidth(), shareA, "m1-splash-share-a");
 		
-		byte[] shareB = encoded.getKey();
+		byte[] shareB = encrypted.getKey();
 		outputBytesToImage(image.getHeight(), image.getWidth(), shareB, "m1-splash-share-b");
 		
-		byte[] decoded = endecService.decode(encoded);
-		outputBytesToImage(image.getHeight(), image.getWidth(), decoded, "m1-splash-shares-combined");
+		byte[] decrypted = endecService.decrypt(encrypted);
+		outputBytesToImage(image.getHeight(), image.getWidth(), decrypted, "m1-splash-shares-combined");
 		
 		
 		
