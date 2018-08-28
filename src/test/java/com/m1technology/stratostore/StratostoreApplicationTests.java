@@ -66,7 +66,6 @@ public class StratostoreApplicationTests {
 		final byte[] key6 = keyService.getKey(600000000);
 		assertEquals(key6.length, 600000000);
 		
-		
 	}
 	
 	
@@ -83,8 +82,6 @@ public class StratostoreApplicationTests {
 			
 			assertEquals(input, new String(returnedData, StandardCharsets.UTF_8));	
 		}
-		
-		
 	}
 	
 	
@@ -108,7 +105,7 @@ public class StratostoreApplicationTests {
 			 
 		}
 
-		//Convert the byte[] into framents
+		//Convert the byte[] into shares
 		Encrypted encrypted = endecService.encrypt(originalImageBytes);
 		
 		byte[] share1bytes = new byte[originalImageBytes.length];
@@ -151,7 +148,7 @@ public class StratostoreApplicationTests {
 	            	assertEquals(image.getRGB(x, y), imageCombined.getRGB(x, y));
 	            }
 	        }
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -169,7 +166,6 @@ public class StratostoreApplicationTests {
 		try {
 			File imageLocation = new File("./src/test/java/resources/m1-splash.bmp");
 			image = ImageIO.read(imageLocation);
-			//image = ImageIO.read(getClass().getResourceAsStream("m1-splash.bmp"));
 			
 			imageBytes = new byte[image.getHeight() * image.getWidth() * 4]; //4 bytes per pixel
 			int byteCounter = 0;
@@ -248,7 +244,7 @@ public class StratostoreApplicationTests {
 		}
 	}
 	
-	//Converts a 4 byte array into an integer
+	//Converts a 4 byte array into an integer.  Used in image testing.
 	public static int byteArrayToInt(byte[] b) {
 	    return   b[3] & 0xFF |
 	            (b[2] & 0xFF) << 8 |
