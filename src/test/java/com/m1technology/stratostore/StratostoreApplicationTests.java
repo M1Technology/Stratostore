@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -23,6 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.m1technology.stratostore.model.Encrypted;
 import com.m1technology.stratostore.service.EndecService;
 import com.m1technology.stratostore.service.KeyService;
+import com.m1technology.stratostore.service.SecretSharingService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -33,7 +35,10 @@ public class StratostoreApplicationTests {
 	
 	@Autowired
 	private EndecService endecService;
-	 	
+	
+	@Autowired
+	private SecretSharingService secretSharingService;
+	
 	@Test 
 	public void testDieharder() {
 		//https://webhome.phy.duke.edu/~rgb/General/dieharder.php
@@ -65,22 +70,22 @@ public class StratostoreApplicationTests {
 	}
 	
 	
-	/*
+	
 	@Test 
 	public void testEncryptAndDeryptDataReturnsExpectedData() {
 	
 		String input = "This is my input string with a bunch of special characters, like !@#$%^&*()_+|}{|:<>?'";
 		byte[] data = input.getBytes();
 		
-		int desiredShares = 3;
+		for (int desiredShares = 2; desiredShares < 10; desiredShares++) {
+			List<byte[]> shares = secretSharingService.share(data, desiredShares, desiredShares);
+			byte[] returnedData = secretSharingService.reconstruct(shares);
+			
+			assertEquals(input, new String(returnedData, StandardCharsets.UTF_8));	
+		}
 		
-		byte[][] shares = endecService.encrypt(data, desiredShares);
 		
-		byte[] returnedData = endecService.decode2(shares);
-		
-		assertEquals(input, new String(returnedData, StandardCharsets.UTF_8));
-		
-	}*/
+	}
 	
 	
 	
