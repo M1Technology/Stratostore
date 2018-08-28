@@ -39,14 +39,9 @@ public class StratostoreApplicationTests {
 	@Autowired
 	private SecretSharingService secretSharingService;
 	
-	@Test 
-	public void testDieharder() {
-		//https://webhome.phy.duke.edu/~rgb/General/dieharder.php
-	}
-	
 	
 	@Test 
-	public void testKeyServiceReturnsProperLengthKey() {
+	public void test_keyService_returnsProperLengthKey() {
 		
 		final byte[] key1 = keyService.getKey(100);
 		assertEquals(key1.length, 100);
@@ -71,7 +66,7 @@ public class StratostoreApplicationTests {
 	
 	
 	@Test 
-	public void testEncryptAndDeryptDataReturnsExpectedData() {
+	public void test_secretSharingService_shareAndReconstructReturnsExpectedDataForMultipleLengthShares() {
 	
 		String input = "This is my input string with a bunch of special characters, like !@#$%^&*()_+|}{|:<>?'";
 		byte[] data = input.getBytes();
@@ -87,16 +82,16 @@ public class StratostoreApplicationTests {
 	
 	
 	@Test
-	public void testLargePngImage() {
+	public void test_secretSharingService_readAndWriteLargePngImageAndConfirmEachPixelIsCorrect() {
 		//Convert image to byte[]
 		byte[] originalImageBytes = null;
-		BufferedImage image = null;
+		BufferedImage originalImage = null;
 		try{  
 			File imageLocation = new File("./src/test/java/resources/input-image.png");
-			image = ImageIO.read(imageLocation);
+			originalImage = ImageIO.read(imageLocation);
 			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
-			ImageIO.write(image, "png", baos); 
+			ImageIO.write(originalImage, "png", baos); 
 			originalImageBytes = baos.toByteArray(); 
 			
 			
@@ -106,32 +101,16 @@ public class StratostoreApplicationTests {
 		}
 
 		//Convert the byte[] into shares
-		Encrypted encrypted = endecService.encrypt(originalImageBytes);
+		List<byte[]> encrypted = secretSharingService.share(originalImageBytes, 2, 2);
 		
-		byte[] share1bytes = new byte[originalImageBytes.length];
-		byte[] share2bytes = new byte[originalImageBytes.length];
-		
-		byte[] decryptedBytes = endecService.decrypt(encrypted);
-		
-		System.out.print("length is: " + originalImageBytes.length + " !");
-		
-		for (int i = 0; i < originalImageBytes.length; i++) {
-			if (i < 200) { //some of the bytes are header info that we need to keep
-				share1bytes[i] = originalImageBytes[i];
-				share2bytes[i] = originalImageBytes[i];
-			} else {
-				share1bytes[i] = encrypted.getCiphertext()[i];
-				share2bytes[i] = encrypted.getKey()[i];
-			}
-		}
-		
+		byte[] decryptedBytes = secretSharingService.reconstruct(encrypted);
 		    
 		//write original back to file to test that it's the same as the input
-		InputStream orig = new ByteArrayInputStream(decryptedBytes);
-		BufferedImage original2;
+		InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
+		BufferedImage reconstructedOriginal;
 		try {
-			original2 = ImageIO.read(orig);
-			ImageIO.write(original2, "png", new File("./src/test/java/resources/output-image.png"));
+			reconstructedOriginal = ImageIO.read(inputStream);
+			ImageIO.write(reconstructedOriginal, "png", new File("./src/test/java/resources/output-image.png"));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -140,15 +119,14 @@ public class StratostoreApplicationTests {
 		
 		try {
 			File fileCombined = new File("./src/test/java/resources/output-image.png");
+			BufferedImage originalImageReconstructed = ImageIO.read(fileCombined);
 			
-			BufferedImage imageCombined = ImageIO.read(fileCombined);
-			
-			for (int x = 0; x < image.getWidth(); x++) {
-	            for (int y = 0; y < image.getHeight(); y++) {
-	            	assertEquals(image.getRGB(x, y), imageCombined.getRGB(x, y));
+			//Ensure that each pixel in the reconstructed image matches the corresponding pixel in the original image.
+			for (int x = 0; x < originalImage.getWidth(); x++) {
+	            for (int y = 0; y < originalImage.getHeight(); y++) {
+	            	assertEquals(originalImage.getRGB(x, y), originalImageReconstructed.getRGB(x, y));
 	            }
 	        }
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -157,7 +135,7 @@ public class StratostoreApplicationTests {
 	
 	
 	@Test
-	public void test_visuallyInspectDecryptedShares() {
+	public void test_endecService_visuallyInspectDecryptedSharesAndConfirmEachPixelIsCorrect() {
 		
 		
 		//Read in an image as a byte array
