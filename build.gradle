@@ -21,6 +21,13 @@ group = 'com.m1technology'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
+idea{
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
 dependencyManagement {
     imports {
         mavenBom 'org.springframework.data:spring-data-releasetrain:Kay-SR9'
@@ -39,13 +46,11 @@ dependencies {
 
 	compile('org.springframework.boot:spring-boot-starter')
 	compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('com.h2database:h2')
-    compile('org.springframework.boot:spring-boot-starter-data-rest')
-    compile('com.github.paulcwarren:spring-content-fs-boot-starter:0.2.0')
     compile('org.apache.commons:commons-lang3')
-    compile('commons-validator:commons-validator:1.4.0')
     compile('org.apache.commons:commons-collections4:4.0')
+    compile('commons-io:commons-io:2.6')
+    compile('commons-validator:commons-validator:1.4.0')
+    compile('org.apache.tika:tika-core:1.17')
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
