@@ -1,6 +1,6 @@
 package com.m1technology.stratostore.service.provider;
 
-import com.m1technology.stratostore.StratostoreException;
+import com.m1technology.stratostore.exception.StratostoreException;
 import com.m1technology.stratostore.model.Share;
 import com.m1technology.stratostore.service.ContentRepo;
 import lombok.Setter;
@@ -19,8 +19,8 @@ public class FileSystemRepo implements ContentRepo<Share, String> {
 
     @Override
     public void upsert(String id, Share share) {
-        try {
-            FileUtils.copyInputStreamToFile(share.getContent(), new File(buildPath(id)));
+        try(InputStream i = share.getContent()) {
+            FileUtils.copyInputStreamToFile(i, new File(buildPath(id)));
         } catch (IOException e) {
            throw new StratostoreException(e);
         }

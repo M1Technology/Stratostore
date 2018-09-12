@@ -1,12 +1,13 @@
 package com.m1technology.stratostore.service;
 
+import com.m1technology.stratostore.exception.StratostoreException;
 import com.m1technology.stratostore.model.Share;
-import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,9 +20,13 @@ public class StratoStoreService implements ContentRepo<Share, String> {
     @Autowired
     private SecretSharingService secretSharingService;
 
-    @SneakyThrows
-    private byte[] toByteArrayQuietly(InputStream is) {
-        return IOUtils.toByteArray(is);
+    private byte[] toByteArrayQuietly(InputStream inputStream) {
+        try(InputStream i = inputStream) {
+            return IOUtils.toByteArray(i);
+        }
+        catch (IOException e) {
+            throw new StratostoreException(e);
+        }
     }
 
     @Override

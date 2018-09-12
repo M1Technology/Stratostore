@@ -1,4 +1,4 @@
-package com.m1technology.stratostore;
+package com.m1technology.stratostore.exception;
 
 public class StratostoreException extends RuntimeException {
     public StratostoreException() {

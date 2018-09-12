@@ -21,7 +21,7 @@ public class StratostoreController {
     private StratoStoreService stratoStoreService;
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> upsert(@PathVariable("id") String id, @RequestParam("data") MultipartFile content) throws IOException {
+    public ResponseEntity<Void> upsert(@PathVariable("id") String id, @RequestParam("content") MultipartFile content) throws IOException {
         stratoStoreService.upsert(id, new Share(MediaType.parseMediaType(content.getContentType()), content.getSize(), content.getInputStream()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
