@@ -1,7 +1,7 @@
 package com.m1technology.stratostore.controller;
 
 import com.m1technology.stratostore.model.Share;
-import com.m1technology.stratostore.service.StratoStoreService;
+import com.m1technology.stratostore.service.StratostoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -18,17 +18,17 @@ import java.io.IOException;
 public class StratostoreController {
 
     @Autowired
-    private StratoStoreService stratoStoreService;
+    private StratostoreService stratostoreService;
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> upsert(@PathVariable("id") String id, @RequestParam("content") MultipartFile content) throws IOException {
-        stratoStoreService.upsert(id, new Share(MediaType.parseMediaType(content.getContentType()), content.getSize(), content.getInputStream()));
+        stratostoreService.upsert(id, new Share(MediaType.parseMediaType(content.getContentType()), content.getSize(), content.getInputStream()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Resource> read(@PathVariable("id") String id) {
-        Share share = stratoStoreService.read(id);
+        Share share = stratostoreService.read(id);
         InputStreamResource inputStreamResource = new InputStreamResource(share.getContent());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentLength(share.getContentLength());
@@ -38,7 +38,7 @@ public class StratostoreController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {
-        stratoStoreService.delete(id);
+        stratostoreService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
