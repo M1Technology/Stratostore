@@ -21,7 +21,7 @@ group = 'com.m1technology'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
-idea{
+idea {
     module {
         downloadJavadoc = true
         downloadSources = true
@@ -51,6 +51,7 @@ dependencies {
     compile('commons-io:commons-io:2.6')
     compile('commons-validator:commons-validator:1.4.0')
     compile('org.apache.tika:tika-core:1.17')
+    compile('com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.0')
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

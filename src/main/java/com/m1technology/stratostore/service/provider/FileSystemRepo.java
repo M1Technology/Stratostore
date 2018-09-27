@@ -3,19 +3,22 @@ package com.m1technology.stratostore.service.provider;
 import com.m1technology.stratostore.exception.StratostoreException;
 import com.m1technology.stratostore.model.Share;
 import com.m1technology.stratostore.service.ContentRepo;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.Tika;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 
 import java.io.*;
 
-@Component
+@AllArgsConstructor
 public class FileSystemRepo implements ContentRepo<Share, String> {
 
-    @Setter
-    private String basePath = FileUtils.getTempDirectoryPath();
+    private String name;
+    private String basePath;
+
+    public FileSystemRepo(String name) {
+        this(name, FileUtils.getTempDirectoryPath() + File.separator + name);
+    }
 
     @Override
     public void upsert(String id, Share share) {
@@ -51,6 +54,6 @@ public class FileSystemRepo implements ContentRepo<Share, String> {
     }
 
     private String buildPath(String id) {
-        return basePath + id;
+        return basePath + File.separator + id;
     }
 }

@@ -1,0 +1,5 @@
+repoConfigs:
+  - name: fileA
+    type: FileSystemRepo
+  - name: fileB
+    type: FileSystemRepo
