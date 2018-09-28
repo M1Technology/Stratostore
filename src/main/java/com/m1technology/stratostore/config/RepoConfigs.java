@@ -17,6 +17,6 @@ public class RepoConfigs {
         @JsonProperty
         private String name;
         @JsonProperty
-        private String type;
+        private RepoType type;
     }
 }

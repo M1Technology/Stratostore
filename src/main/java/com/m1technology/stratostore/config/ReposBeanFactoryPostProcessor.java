@@ -31,10 +31,17 @@ public class ReposBeanFactoryPostProcessor implements BeanDefinitionRegistryPost
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
         repoConfigs.getRepoConfigs()
                    .forEach(repoConfig -> beanDefinitionRegistry.registerBeanDefinition(repoConfig.getName(), BeanDefinitionBuilder
-                           .genericBeanDefinition(FileSystemRepo.class)
+                           .genericBeanDefinition(forNameQuietly(repoConfig.getType().toFullyQualifiedClassName()))
                            .addConstructorArgValue(repoConfig.getName())
                            .setLazyInit(true)
                            .getBeanDefinition()));
+    }
+    private Class forNameQuietly(String className) {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new StratostoreException(e);
+        }
     }
 
     @Override

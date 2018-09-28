@@ -1,5 +1,5 @@
 repoConfigs:
   - name: fileA
-    type: FileSystemRepo
+    type: FILE_SYSTEM
   - name: fileB
-    type: FileSystemRepo
+    type: FILE_SYSTEM
