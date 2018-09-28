@@ -1,14 +1,25 @@
 package com.m1technology.stratostore;
 
 import com.m1technology.stratostore.model.Encrypted;
+import com.m1technology.stratostore.model.Share;
 import com.m1technology.stratostore.service.EndecService;
 import com.m1technology.stratostore.service.KeyService;
 import com.m1technology.stratostore.service.SecretSharingService;
+import com.m1technology.stratostore.service.StratostoreService;
+
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -18,6 +29,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +50,38 @@ public class StratostoreApplicationTests {
 
     @Autowired
     private SecretSharingService secretSharingService;
+    
+    @Autowired
+    private StratostoreService stratostoreService;
 
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+    
+    @Test
+    public void test_canSaveAndRetrieve() throws IOException {
+    	//Create multipart file
+    	Path path = Paths.get("./src/test/java/resources/input-image.png");
+    	String name = "input-image.png";
+    	String originalFileName = "input-image.png";
+    	String inputContentType = "image/png";
+    	byte[] inputContent = Files.readAllBytes(path);
+    	
+    	MultipartFile mpFile = new MockMultipartFile(name,
+    	                     originalFileName, inputContentType, inputContent);
+    	
+    	//Save file
+    	stratostoreService.upsert("key_id", new Share(MediaType.parseMediaType(mpFile.getContentType()), mpFile.getSize(), mpFile.getInputStream()));
+        
+    	//RetrieveFile
+    	Share retrievedFile = stratostoreService.read("key_id");
+
+    	//Compare original and retrieved files
+    	assertEquals(inputContentType, retrievedFile.getMediaType().toString());
+    	
+    	byte[] retrievedBytes = IOUtils.toByteArray(retrievedFile.getContent());
+    	assertTrue(Arrays.equals(inputContent, retrievedBytes));
+    }
+    
     @Test
     public void test_keyService_returnsProperLengthKey() {
 
@@ -58,6 +104,10 @@ public class StratostoreApplicationTests {
         assertEquals(600000000, key6.length);
     }
 
+    public void test_stratostoreService_storesAndRetrievesData() {
+    	//stratostoreService.upsert("stratostoreTempFile", new Share(MediaType.parseMediaType(content.getContentType()), content.getSize(), content.getInputStream()));
+    }
+    
     @Test
     public void test_secretSharingService_shareAndReconstructReturnsExpectedDataForMultipleLengthShares() throws IOException {
 

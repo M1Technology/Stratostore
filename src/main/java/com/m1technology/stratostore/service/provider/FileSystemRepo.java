@@ -3,6 +3,7 @@ package com.m1technology.stratostore.service.provider;
 import com.m1technology.stratostore.exception.StratostoreException;
 import com.m1technology.stratostore.model.Share;
 import com.m1technology.stratostore.service.ContentRepo;
+import com.m1technology.stratostore.util.TikaUtils;
 import lombok.AllArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.Tika;
@@ -32,13 +33,7 @@ public class FileSystemRepo implements ContentRepo<Share, String> {
     @Override
     public Share read(String id) {
         File file = new File(buildPath(id));
-        Tika tika = new Tika();
-        String type;
-        try {
-            type = tika.detect(file);
-        } catch (IOException e) {
-            throw new StratostoreException(e);
-        }
+        String type = TikaUtils.detectType(file);
         InputStream content;
         try {
             content = new FileInputStream(file);
